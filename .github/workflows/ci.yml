@@ -44,7 +44,7 @@ jobs:
         run: docker build --file backend/Dockerfile --tag taskflow-backend:ci backend
 
       - name: Scan backend Docker image with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: taskflow-backend:ci
           severity: HIGH,CRITICAL
@@ -55,7 +55,7 @@ jobs:
         run: docker build --file frontend/Dockerfile --tag taskflow-frontend:ci frontend
 
       - name: Scan frontend Docker image with Trivy
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: taskflow-frontend:ci
           severity: HIGH,CRITICAL
