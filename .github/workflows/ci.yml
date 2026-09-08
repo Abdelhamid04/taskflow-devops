@@ -21,23 +21,24 @@ jobs:
             frontend/package-lock.json
             backend/package-lock.json
 
+      # Frontend
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
 
-      # Snyk scans
       - name: Snyk Security Scan (Frontend)
         uses: snyk/actions/node@master
         with:
           command: test
+          args: --file=frontend/package.json
         env:
           SNYK_TOKEN: ${{ secrets.TASKFLOW }}
-        working-directory: frontend
 
       - name: Build frontend
         working-directory: frontend
         run: npm run build
 
+      # Backend
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
@@ -46,14 +47,15 @@ jobs:
         uses: snyk/actions/node@master
         with:
           command: test
+          args: --file=backend/package.json
         env:
           SNYK_TOKEN: ${{ secrets.TASKFLOW }}
-        working-directory: backend
 
       - name: Check backend syntax
         working-directory: backend
         run: node --check server.js
 
+      # Docker
       - name: Validate Docker Compose configuration
         run: docker compose config
 
@@ -78,4 +80,3 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: '1'
           format: table
-      
