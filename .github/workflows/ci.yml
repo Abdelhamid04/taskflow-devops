@@ -25,6 +25,15 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      # Snyk scans
+      - name: Snyk Security Scan (Frontend)
+        uses: snyk/actions/node@master
+        with:
+          command: test
+        env:
+          SNYK_TOKEN: ${{ secrets.TASKFLOW }}
+        working-directory: frontend
+
       - name: Build frontend
         working-directory: frontend
         run: npm run build
@@ -32,6 +41,14 @@ jobs:
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
+
+      - name: Snyk Security Scan (Backend)
+        uses: snyk/actions/node@master
+        with:
+          command: test
+        env:
+          SNYK_TOKEN: ${{ secrets.TASKFLOW }}
+        working-directory: backend
 
       - name: Check backend syntax
         working-directory: backend
@@ -61,3 +78,4 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: '1'
           format: table
+      
