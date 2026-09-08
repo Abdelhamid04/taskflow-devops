@@ -55,6 +55,13 @@ jobs:
         working-directory: backend
         run: node --check server.js
 
+      # SonarQube
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
       # Docker
       - name: Validate Docker Compose configuration
         run: docker compose config
