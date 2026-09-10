@@ -22,7 +22,7 @@ RUN apk upgrade --no-cache && npm install --global npm@latest vite
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
 COPY --from=build /app/dist ./dist
-
+RUN printf '%s\n' 'export default { preview: { allowedHosts: true } };' > vite.config.js
 ENV NODE_ENV=production
 
 EXPOSE 4173

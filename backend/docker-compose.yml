@@ -1,0 +1,4 @@
+environment:
+  - MONGO_URI=mongodb://mongo:27017/taskflow
+  - PORT=5000
+  - CORS_ORIGIN=http://localhost
