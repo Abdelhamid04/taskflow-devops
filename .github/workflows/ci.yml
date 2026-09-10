@@ -9,9 +9,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # =========================
+      # Checkout
+      # =========================
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # =========================
+      # Node.js
+      # =========================
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -21,7 +27,9 @@ jobs:
             frontend/package-lock.json
             backend/package-lock.json
 
+      # =========================
       # Frontend
+      # =========================
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
@@ -32,13 +40,15 @@ jobs:
           command: test
           args: --file=frontend/package.json
         env:
-          SNYK_TOKEN: ${{ secrets.TASKFLOW }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Build frontend
         working-directory: frontend
         run: npm run build
 
+      # =========================
       # Backend
+      # =========================
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
@@ -49,23 +59,37 @@ jobs:
           command: test
           args: --file=backend/package.json
         env:
-          SNYK_TOKEN: ${{ secrets.TASKFLOW }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Check backend syntax
         working-directory: backend
         run: node --check server.js
 
+      # =========================
       # SonarQube
+      # =========================
+      - name: Test SonarQube connection
+        run: |
+          echo "Testing SonarQube connection..."
+          curl -I --max-time 15 "$SONAR_HOST_URL/api/system/status"
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      # Docker
+      # =========================
+      # Docker Compose
+      # =========================
       - name: Validate Docker Compose configuration
         run: docker compose config
 
+      # =========================
+      # Backend Docker
+      # =========================
       - name: Build backend Docker image
         run: docker build --file backend/Dockerfile --tag taskflow-backend:ci backend
 
@@ -77,6 +101,9 @@ jobs:
           exit-code: '1'
           format: table
 
+      # =========================
+      # Frontend Docker
+      # =========================
       - name: Build frontend Docker image
         run: docker build --file frontend/Dockerfile --tag taskflow-frontend:ci frontend
 
