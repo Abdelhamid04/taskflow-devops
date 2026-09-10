@@ -10,9 +10,13 @@ RUN npm ci --omit=dev
 
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 
-COPY . .
+COPY server.js ./
+COPY routes ./routes
+COPY models ./models
 
 ENV NODE_ENV=production
+
+USER node
 
 EXPOSE 5000
 

@@ -8,7 +8,22 @@ const taskRoutes = require('./routes/taskRoutes');
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.disable('x-powered-by');
+
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+  : [];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('CORS origin non autorisée'));
+  }
+}));
+
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {
