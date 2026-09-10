@@ -13,8 +13,21 @@ jobs:
       - name: Deploy on Ubuntu server
         run: |
           cd ~/taskflow-devops
+
           git fetch origin main
           git reset --hard origin/main
+
           docker compose up -d --build
+
+          # Refresh Nginx after frontend container recreation
+          docker restart taskflow-nginx
+
+          # Give services a few seconds to stabilize
+          sleep 5
+
           docker compose ps
+
+          # Health checks
           curl -f http://localhost/api/health
+          curl -f http://localhost/
+          
